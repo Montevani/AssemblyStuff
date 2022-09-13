@@ -1,0 +1,36 @@
+tempo EQU 290
+vm EQU P1.0
+am EQU P1.1
+vd EQU P1.2
+
+; Programa Principal
+ORG 000H
+	SJMP 0035H
+ORG 0035H
+vermelho:MOV P1, #0FFh; apaga todos os LEDs
+CLR vm
+MOV R0, #01H
+LJMP atraso
+amarelo: MOV P1, #0FFh
+CLR am
+MOV R0, #00H
+LJMP atraso
+verde: MOV P1, #0FFh
+CLR vd
+MOV R0, #02H
+LJMP atraso
+
+
+; rotina para gerar atraso
+atraso: MOV R7, #high tempo
+cont1: MOV R6, #low tempo
+cont2: DJNZ R6,cont2
+DJNZ R7, cont1
+cor:CLR C 
+MOV A, #03H
+SUBB A,R0
+JZ vermelho
+INC A 
+JZ amarelo
+INC A 
+JZ verde

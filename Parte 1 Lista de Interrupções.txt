@@ -1,0 +1,220 @@
+LISTA INTERRUPÇÕES
+
+PARTE 1
+OBS: MCU APAGOU MEU EX 1
+
+EX2---------------------------------------------------------------
+
+ORG 00H
+SJMP INICIO
+ORG 030H
+INICIO:MOV R1,#0H
+       MOV R0,#32H
+        
+LOOP:  MOV A,P1
+       MOV B,P0
+       ADD A,B
+       MOV P2,A 
+       DEC R0
+       INC R1
+       CJNE R1,#0AH,COMP
+       MOV P0,#0H
+       MOV R1,#0H
+COMP:  DJNZ R0,LOOP
+       SJMP FIM
+FIM:   NOP
+       END
+
+
+EX 3---------------------------------------------------------------
+
+
+ORG 00H
+LJMP INICIO
+ORG 2000H
+INICIO:MOV R7,#02H 
+       MOV R0,#20H
+       
+LOOP:  MOV B,R7
+       MOV A,P1
+       MOV R5,A
+       MOV @R0,A
+       INC R0
+       DIV AB
+       MOV R6,B
+       CJNE R6,#00H,IMP
+       INC R2
+       MOV P2,R5
+IMP:   CJNE R6,#01H,LOOP
+       INC R1
+       MOV P3,R5
+       SJMP LOOP 
+       END 
+
+EX 4-----------------------------------------------------------
+
+ORG 00H
+LJMP INICIO
+ORG 2000H
+INICIO:MOV R7,#02H 
+       MOV R0,#20H
+       
+LOOP:  MOV B,R7
+       MOV A,P1
+       MOV R5,A
+       MOV @R0,A
+       INC R0
+       DIV AB
+       MOV R6,B
+       CJNE R6,#00H,IMP
+       ACALL PAR
+IMP:   CJNE R6,#01H,LOOP
+       ACALL IMPAR
+       SJMP LOOP 
+
+PAR:  INC R2
+      MOV P2,R5
+      RET
+IMPAR:INC R1
+      MOV P3,R5
+      RET
+
+EX 5-------------------------------------------------------------
+
+
+
+ORG 00H
+LJMP INICIO
+ORG 003H
+       MOV P0,R1
+       RETI
+ORG 0013H
+       MOV P0,R2
+       RETI 
+ORG 2000H
+INICIO:MOV R7,#02H 
+       MOV R0,#20H
+       MOV IE,#10000101B
+       MOV TCON,#00000101B
+LOOP:  MOV B,R7
+       MOV A,P1
+       MOV R5,A
+       MOV @R0,A
+       INC R0
+       DIV AB
+       MOV R6,B
+       CJNE R6,#00H,IMP
+       ACALL PAR
+IMP:   CJNE R6,#01H,LOOP
+       ACALL IMPAR
+       SJMP LOOP 
+
+PAR:  INC R2
+      MOV P2,R5
+      RET
+IMPAR:INC R1
+      MOV P3,R5
+      RET
+      END 
+
+EX 6---------------------------------------------------
+
+CHAVE1 EQU P1.0
+CHAVE2 EQU P1.1
+CHAVE3 EQU P1.2
+LED1   EQU P1.4
+LED2   EQU P1.5
+LED3   EQU P1.6
+ORG 000H
+LJMP   INICIO
+ORG 003H
+        SETB LED1
+        SETB LED2
+        SETB LED3
+        RETI
+ORG 0013H
+        CLR LED1
+        CLR LED2
+        CLR LED3
+        RETI
+ORG 030H
+INICIO: MOV IE,#10000101B
+        MOV IP,#00000100B
+        MOV TCON,#00000101B
+lOOP:   JNB CHAVE1,SALTO1
+        JNB CHAVE2,SALTO2
+        JNB CHAVE3,SALTO3
+        SJMP LOOP
+
+SALTO1: CLR LED1
+        SETB LED2
+        SETB LED3
+        LJMP LOOP
+SALTO2: SETB LED1
+        CLR  LED2
+        SETB LED3
+        LJMP LOOP
+SALTO3: SETB LED1
+        SETB LED2
+        CLR  LED3
+        LJMP LOOP
+        END
+
+EX 8-------------------------------------------------
+
+ORG 000H
+LJMP INICIO
+ORG 03H
+	CPL P2.4
+        RETI
+
+INICIO:
+	MOV IE,#10000001B
+	MOV TCON, #00000010B
+	SETB P2.4
+	SJMP $
+END 
+
+EX 9---------------------------------------------
+
+MUITO PARECIDO COM O 8 (RAZÃO PELA QUAL NAO FIZ)
+
+EX 10------------------------------------------
+
+
+PRESENTES EQU R1 
+ENTRARAM  EQU R0
+
+ORG 000H
+SJMP INICIO
+ORG 003H
+    INC PRESENTES
+    INC ENTRARAM
+    ACALL VER
+    RETI
+ORG 0013H
+    DEC PRESENTES
+    MOV P2,PRESENTES
+    ACALL VER
+    RETI
+ORG 0030H
+INICIO: MOV B,#0AH
+        MOV IE,#10000101B
+        MOV TCON,#5H
+LOOP:   MOV P1,ENTRARAM
+        MOV P2,PRESENTES
+        SJMP LOOP
+
+VER:  
+      MOV A,R1
+      DIV AB
+      CJNE A,#0H,VOLTA
+      SETB P0.0
+      MOV B,#0AH
+      RET
+VOLTA:CLR P0.0
+      MOV B,#0AH
+      RET     
+     
+        
+    

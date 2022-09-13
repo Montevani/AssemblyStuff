@@ -1,0 +1,38 @@
+ORG 00H
+    LJMP INICIO
+ORG 03H
+    SJMP LIGATUDO
+
+ORG 30H
+
+    INICIO: MOV SP, #2FH
+        MOV IE, #81H
+        MOV TCON, #01H
+        CLR A
+        CLR C
+        MOV 11H, #00H
+        MOV 10H, #2H
+    LEDS:     MOV P0,A
+        LCALL ATRASO
+        MOV R0, 11H
+        ADD A, A
+        INC A
+        CJNE R2, 11H,
+        CJNE A, #255D, LEDS
+        SJMP FIM
+       
+    ATRASO: MOV R0,#1D
+    ATR:    MOV R1,#2D
+        DJNZ R1,$
+        DJNZ R0,ATR
+        RET
+
+    LIGATUDO: DJNZ 10H, NAOFOI5
+          MOV 11H, #1H 
+          RETI
+    NAOFOI5:  MOV 12H, #00H
+          MOV P0,12H
+          RETI
+
+    FIM:     MOV P0, #0FFH 
+        END

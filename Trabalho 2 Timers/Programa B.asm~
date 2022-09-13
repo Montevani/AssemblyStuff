@@ -1,0 +1,13 @@
+	ORG	0H
+	LJMP	Inicio ; Vai para o programa principal
+
+	ORG	100h
+Inicio:	MOV	TMOD, #10000b	; Configura Timer 1 em modo 1
+	MOV	TH1, #High(65535-500)	; Cria frequecia de 1kHz colocando valores inciais no 							Timer 1
+	MOV	TL1, #Low(65535-500)	; Cria frequecia de 1kHz colocando valores inciais no 							Timer 1
+	SETB	TR1		; Dispara timer
+	CPL	P1.0		; Inverte valor da saída
+	JNB	TF1, $		; Aguarda indicação de fim de periodo (overflow)
+	CLR	TR1		; Para o timer
+	CLR	TF1		; Limpa flag indicadora de overflow
+	SJMP	INICIO		; Retorna ao inicio do programa para proximo pulso

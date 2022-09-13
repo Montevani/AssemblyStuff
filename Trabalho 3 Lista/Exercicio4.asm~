@@ -1,0 +1,60 @@
+Repete EQU P1.0
+Motor EQU P1.1
+Buzzer EQU P1.2
+Para EQU P1.3
+ORG 00H
+LJMP Inicio
+
+ORG 0BH
+INC A
+RETI
+
+ORG 100H
+Inicio: LCALL Reinicia
+	JNB Para, $
+	SETB Motor
+loop:	JNB Para, fim2
+	CJNE A, #10d, loop
+	CLR TR0
+	CLR TR1
+	MOV A, TL1
+	SUBB A, #5h
+	JNC fim
+	LCALL BEEP
+	LCALL reinicia
+	SJMP loop
+
+fim: CLR Motor
+     LCALL BEEP
+     JB Repete, fim
+     LCALL Reinicia
+     LJMP loop
+
+fim2:CLR Motor
+     JB Repete, $
+     LCALL Reinicia
+     LJMP loop
+
+Reinicia:MOV IE, #10000010b
+	 MOV TMOD, #01010110b
+	 SETB TR0
+	 SETB TR1
+	 MOV TH0,#0FFh
+	 MOV TL0,#0FFh
+	 MOV TH1,#000h
+	 MOV TL1,#000h
+	 MOV A, #0H
+	 CLR C
+	 RET
+
+BEEP:   MOV IE, 0H
+	MOV TCON, 0H
+	MOV TMOD, #1H
+	MOV TH0, #0FFh
+	MOV TL0, #0B3h
+	SETB TR0
+	CPL Buzzer
+	JNB TF0, $
+	CLR TR0
+	CLR Buzzer
+	RET

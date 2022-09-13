@@ -1,0 +1,50 @@
+ORG 00H
+LJMP Inicio
+
+ORG 13H
+MOV A, #1h
+RETI
+
+ORG 1BH
+LCALL MudaLed
+RETI
+
+ORG 100H
+Inicio: MOV IE,   #10001100b
+	MOV TMOD, #01010000b
+	MOV TCON, #00000100b
+Reinicia:MOV A, #0h
+	 MOV R1, #2h
+	 SETB TR1
+	 LCALL IniciaTimer
+	 LCALL ApagaLeds
+	 CJNE A, #1h, $
+	 SJMP Reinicia
+
+MudaLed: CJNE R1, #2h, amarelo
+	 LCALL IniciaTimer
+	 LCALL ApagaLeds
+	 DEC R1
+	 CLR P1.2
+	 SJMP fim
+amarelo: CJNE R1, #1h, vermelho
+	 LCALL IniciaTimer
+	 LCALL ApagaLeds
+	 CLR P1.1
+	 DEC R1
+	 SJMP fim
+vermelho:LCALL IniciaTimer
+	 LCALL ApagaLeds
+	 CLR P1.0
+	 MOV R1, #02h
+fim:     RET
+
+IniciaTimer: MOV TH1, #0FFh
+	     MOV TL1, #0FEh
+	     CLR TF1
+	     RET
+
+ApagaLeds: SETB P1.0
+	   SETB P1.1
+	   SETB P1.2
+	   RET
